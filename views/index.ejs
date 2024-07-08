@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Books Search</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Google Books Search</h1>
+    <form action="/search" method="GET">
+        <input type="text" name="query" placeholder="Search for books">
+        <button type="submit">Search</button>
+    </form>
+    <% if (books && books.length > 0) { %>
+        <ul>
+            <% books.forEach(book => { %>
+                <li>
+                    <div class="book-info">
+                        <img src="<%= book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : '' %>" alt="Book cover">
+                        <h2><%= book.volumeInfo.title %></h2>
+                        <p><%= book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author' %></p>
+                        <p>
+                            <span class="description" id="desc-<%= book.id %>"><%= book.volumeInfo.truncatedDescription %></span>
+                            <% if (book.volumeInfo.isTruncated) { %>
+                                <a href="javascript:void(0)" onclick="toggleDescription('<%= book.id %>')">See more</a>
+                            <% } %>
+                        </p>
+                        <p class="full-description" id="full-desc-<%= book.id %>" style="display:none;"><%= book.volumeInfo.fullDescription %></p>
+                        <a href="<%= book.volumeInfo.amazonSearchUrl %>" target="_blank">Buy on Amazon</a>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else if (books) { %>
+        <p>No books found.</p>
+    <% } %>
+    <script>
+        function toggleDescription(bookId) {
+            const truncatedDesc = document.getElementById(`desc-${bookId}`);
+            const fullDesc = document.getElementById(`full-desc-${bookId}`);
+            const seeMoreLink = truncatedDesc.nextElementSibling;
+
+            if (fullDesc.style.display === 'none') {
+                fullDesc.style.display = 'block';
+                truncatedDesc.style.display = 'none';
+                seeMoreLink.textContent = 'See less';
+            } else {
+                fullDesc.style.display = 'none';
+                truncatedDesc.style.display = 'inline';
+                seeMoreLink.textContent = 'See more';
+            }
+        }
+    </script>
+</body>
+</html>
